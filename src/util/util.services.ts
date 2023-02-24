@@ -13,9 +13,16 @@ export const bvnAccounts = async (data) => {
 
 export const bvnCustomer = async (data) => {
   try {
-    console.log(data, process.env.CUSTOMER_URL);
     const account = await axios.post(`${process.env.CUSTOMER_URL}`, data);
-    console.log({ account: account.data.data });
+    return account.data.data;
+  } catch (error) {
+    throw new BadRequestException(error.message);
+  }
+};
+
+export const bvnIdentity = async (data) => {
+  try {
+    const account = await axios.post(`${process.env.IDENTITY_URL}`, data);
     return account.data.data;
   } catch (error) {
     throw new BadRequestException(error.message);

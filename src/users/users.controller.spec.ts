@@ -34,7 +34,6 @@ describe('UserController', () => {
 
   it('should create user', async () => {
     const api = apiClient();
-    const po = api
       .post('/v1/users')
       .send({
         email: 'jay5@mailinator.com',
@@ -47,13 +46,6 @@ describe('UserController', () => {
         }
         console.log(res.body);
       });
-
-    // .send({
-    //   email: 'jay5@mailinator.com',
-    //   password: 'password@1',
-    //   name: 'Freddy jay',
-    // })
-    // .expect(201);
   });
 
   afterEach(async () => {
