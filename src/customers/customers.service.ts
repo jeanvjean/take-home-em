@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateCustomerDto } from './dto/create-customer.dto';
-import { UpdateCustomerDto } from './dto/update-customer.dto';
-import { bvnAccounts, bvnCustomer } from '../util/util.services';
+import { bvnAccounts, bvnCustomer, bvnIdentity } from '../util/util.services';
 import { Model } from 'mongoose';
 import { CustomerInterface } from 'src/schemas/schema.customers';
 import { IdentityInterface } from '../schemas/schema.identity';
 import { InjectModel } from '@nestjs/mongoose';
+import { months } from '../util/utils.constants';
 
 @Injectable()
 export class CustomersService {
@@ -16,39 +16,45 @@ export class CustomersService {
     private readonly identityModel: Model<IdentityInterface>,
   ) {}
   async createCustomer(data: CreateCustomerDto) {
-    const accounts = await bvnAccounts(data);
-    return accounts.data.response.map(async (account) => {
-      const customer = await bvnCustomer({
-        nuban: account.account_no,
-        bank: account.bank,
+    try {
+      let identityResponse;
+      const check = await this.customerModel.findOne({
         bvn: data.bvn,
       });
-      const newCustomer = new this.customerModel({
-        ...customer.response,
-      });
-      const check = await this.customerModel.findOne({
-        account_number: account.account_no,
-      });
-      const dn = !check
-        ? await newCustomer.save()
-        : await check.update(check._id, { ...newCustomer });
-      return dn;
-    });
-  }
+      if (!check) {
+        const accounts = await bvnAccounts(data);
+        accounts.data.response.map(async (account) => {
+          const customer = await bvnCustomer({
+            nuban: account.account_no,
+            bank: account.bank,
+            bvn: data.bvn,
+          });
+          const dobSplit = customer.response.birthdate.split(' ');
+          const newCustomer = new this.customerModel({
+            ...customer.response,
+          });
+          const dn = await newCustomer.save();
+          const idData = {
+            dob: `${dobSplit[2]}-${months.indexOf(dobSplit[0]) + 1}-01`,
+            bvn: data.bvn,
+          };
+          const saveId = await bvnIdentity(idData);
+          let obj = {};
+          Object.entries(saveId.response).map((doc) => {
+            obj = { ...obj, [doc[0].toLowerCase()]: doc[1] };
+          });
+          const idMode = new this.identityModel({
+            ...obj,
+          });
+          identityResponse = await idMode.save();
+          return dn;
+        });
+      }
+      identityResponse = await this.identityModel.findOne({ bvn: data.bvn });
 
-  findAll() {
-    return `This action returns all customers`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} customer`;
-  }
-
-  update(id: number, updateCustomerDto: UpdateCustomerDto) {
-    return `This action updates a #${id} customer`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} customer`;
+      return identityResponse;
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
   }
 }

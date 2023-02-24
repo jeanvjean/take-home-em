@@ -9,30 +9,34 @@ export interface IdentityInterface extends Document {
   firstname: string;
   middlename: string;
   lastname: string;
-  aliases: string[];
-  dob: Date;
+  aliases: [string];
+  dateofbirth: string;
   address: string;
   gender: string;
   photo_id: string;
-  enrollment_date: Date;
+  enrollment_date: string;
   enrollment_bank: string;
-  phones: [string];
-  emails: [string];
+  phone: string;
+  email: string;
   fullname: string;
   bvn: string;
   customer: string;
   identity: string;
   nin: string;
-  lga_origin: string;
-  lga_residence: string;
+  lgaorigin: string;
+  state_of_residence: string;
   nationality: string;
   state_residence: string;
-  state_origin: string;
-  enrollment: Enrollment;
-  on_washlist: false;
-  marital_status: string;
-  account_level: string;
-  verification_country: string;
+  state_of_origin: string;
+  registrationdate: string;
+  enrollment: {
+    bank: string;
+    registration_date: string;
+  };
+  watchlist: boolean;
+  maritalstatus: string;
+  accountlevel: string;
+  verificationcountry: string;
 }
 
 export const IdentitySchema = new mongoose.Schema(
@@ -41,32 +45,33 @@ export const IdentitySchema = new mongoose.Schema(
     middlename: String,
     lastname: String,
     aliases: [String],
-    dob: Date,
+    dateofbirth: Date,
     address: String,
     gender: String,
     photo_id: String,
     enrollment_date: Date,
     enrollment_bank: String,
-    phones: [String],
-    emails: [String],
+    phone: String,
+    email: String,
     fullname: String,
     bvn: String,
     customer: String,
     identity: String,
     nin: String,
-    lga_origin: String,
-    lga_residence: String,
+    lgaorigin: String,
+    state_of_residence: String,
     nationality: String,
     state_residence: String,
-    state_origin: String,
+    state_of_origin: String,
+    registrationdate: String,
     enrollment: {
       bank: String,
       registration_date: Date,
     },
-    on_washlist: Boolean,
-    marital_status: String,
-    account_level: String,
-    verification_country: String,
+    watchlist: Boolean,
+    maritalstatus: String,
+    accountlevel: String,
+    verificationcountry: String,
   },
   {
     timestamps: true,
