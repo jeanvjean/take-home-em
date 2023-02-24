@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCustomerDto } from './dto/create-customer.dto';
-import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { bvnAccounts, bvnCustomer } from '../util/util.services';
 import { Model } from 'mongoose';
 import { CustomerInterface } from 'src/schemas/schema.customers';
@@ -16,7 +15,9 @@ export class CustomersService {
     private readonly identityModel: Model<IdentityInterface>,
   ) {}
   async createCustomer(data: CreateCustomerDto) {
+    console.log({ data });
     const accounts = await bvnAccounts(data);
+    console.log({ accounts });
     return accounts.data.response.map(async (account) => {
       const customer = await bvnCustomer({
         nuban: account.account_no,
@@ -34,21 +35,5 @@ export class CustomersService {
         : await check.update(check._id, { ...newCustomer });
       return dn;
     });
-  }
-
-  findAll() {
-    return `This action returns all customers`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} customer`;
-  }
-
-  update(id: number, updateCustomerDto: UpdateCustomerDto) {
-    return `This action updates a #${id} customer`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} customer`;
   }
 }

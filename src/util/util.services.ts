@@ -4,7 +4,7 @@ import 'dotenv/config';
 
 export const bvnAccounts = async (data) => {
   try {
-    const accounts = await axios.post(`${process.env.IDENTITY_URL}`, data);
+    const accounts = await axios.post(`${process.env.ACCOUNT_URL}`, data);
     return accounts.data;
   } catch (error) {
     throw new BadRequestException(error.message);
