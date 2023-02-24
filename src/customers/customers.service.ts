@@ -51,7 +51,6 @@ export class CustomersService {
         });
       }
       identityResponse = await this.identityModel.findOne({ bvn: data.bvn });
-
       return identityResponse;
     } catch (error) {
       throw new BadRequestException(error.message);
