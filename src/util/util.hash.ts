@@ -19,7 +19,7 @@ export default {
         ...user,
       },
       process.env.JWT_SECRET,
-      { expiresIn: '10m' },
+      { expiresIn: '2h' },
     );
   },
 
